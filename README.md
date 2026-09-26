@@ -11,17 +11,7 @@ IRIS for Health 2026.1 Community Edition だけで、SMART on FHIR v2 の細粒�
 
 ## 構成
 
-```mermaid
-flowchart LR
-  user["ブラウザ（分析アプリ）<br>確認スクリプト"]
-  subgraph shared["2 つのコンテナが共有するネットワーク"]
-    wg["webgateway<br>Web Gateway + Apache<br>HTTPS を終端する"]
-    iris["iris（IRIS for Health）<br>/app 分析アプリ<br>/oauth2 認可サーバ<br>/fhir/r4 FHIR リポジトリ"]
-  end
-  user -- "https://localhost:8443" --> wg
-  wg -- "中継" --> iris
-  iris -- "トークンの確認<br>https://localhost:8443/oauth2" --> wg
-```
+![構成図: ブラウザの分析アプリと確認スクリプトは、HTTPS（8443 番）で Web Gateway に接続し、Web Gateway が IRIS の分析アプリ、認可サーバ、FHIR リポジトリに中継する。2 つのコンテナはネットワークを共有する](docs/architecture.svg)
 
 IRIS のコンテナは Web Gateway のコンテナとネットワークを共有しています。IRIS の中から見た `localhost:8443` も Web Gateway になるので、ブラウザと IRIS のどちらからも、認可サーバ（発行元）に同じ `https://localhost:8443/oauth2` で届きます。hosts ファイルの編集は不要です。
 
@@ -36,6 +26,7 @@ IRIS のコンテナは Web Gateway のコンテナとネットワークを共�
 | `tools/synthea/` | 合成患者データを作り直すスクリプト |
 | `tools/browser-test/` | 分析アプリをヘッドレスの Chromium で操作するテスト（任意） |
 | `shared/` | IRIS が起動後に書き出す設定（発行元、クライアント ID、デモ用の利用者） |
+| `docs/` | README の構成図 |
 
 ## 前提
 
