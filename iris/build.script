@@ -1,0 +1,6 @@
+zn "%SYS"
+set sc = $system.OBJ.LoadDir("/opt/demo/src/sys", "ck", .errors, 1)
+if 'sc { do $system.Status.DisplayError(sc) do $system.Process.Terminate(, 1) }
+set sc = ##class(Demo.Setup).Build()
+if 'sc { do $system.Status.DisplayError(sc) do $system.Process.Terminate(, 1) }
+halt

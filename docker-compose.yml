@@ -1,0 +1,36 @@
+name: iris-smart-v2-scopes-demo
+
+services:
+  # HTTPS の入口。IRIS はこのコンテナのネットワークを共有するので、公開ポートはここにまとめる
+  webgateway:
+    image: containers.intersystems.com/intersystems/webgateway:2026.1
+    entrypoint: ["/bin/sh", "/webgateway-shared/start.sh"]
+    environment:
+      ISC_CSP_CONF_FILE: /webgateway-shared/CSP.conf
+      ISC_CSP_INI_FILE: /webgateway-shared/CSP.ini
+      TLS_HOSTNAME: localhost
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./webgateway:/webgateway-shared
+      - ./shared:/shared
+    # イメージ既定のヘルスチェックは HTTP の管理ページを見に行き 404 を記録し続けるので、
+    # 認可サーバのメタデータが HTTPS で返るかで確かめる
+    healthcheck:
+      test: ["CMD-SHELL", "curl -kfsS -o /dev/null https://localhost:8443/oauth2/.well-known/openid-configuration || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # FHIR リポジトリと内蔵の OAuth 2.0 認可サーバ
+  iris:
+    build:
+      context: ./iris
+    depends_on:
+      - webgateway
+    # Web Gateway とネットワークを共有し、IRIS からも https://localhost:8443 で
+    # 認可サーバ（発行元）に届くようにする。ブラウザと IRIS で発行元の URL がそろう
+    network_mode: "service:webgateway"
+    volumes:
+      - ./shared:/shared

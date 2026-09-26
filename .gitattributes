@@ -1,0 +1,3 @@
+# シェルスクリプトや IRIS のクラスは Linux のコンテナで使うので、改行を LF にそろえる。
+# Windows で clone しても CRLF にならないようにする（CRLF だとコンテナの起動に失敗する）
+* text=auto eol=lf

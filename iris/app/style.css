@@ -1,0 +1,339 @@
+:root {
+  color-scheme: light;
+  --ground: #eef1f3;
+  --surface: #ffffff;
+  --ink: #1a232b;
+  --ink-2: #53606a;
+  --rule: #d9dfe0;
+  --frame: #2b3a4a;
+  --accent: #b3410c;
+  --accent-soft: #fbe8dd;
+  --link: #1c5ea6;
+  --code-bg: #e9edee;
+  --yellow: #f4b400;
+  --yellow-ink: #1a1a1a;
+  --secondary: #6b7280;
+  --tab: #6f93bf;
+  --tab-active: #1f5c99;
+  --error: #b0251d;
+  --error-soft: #f8e1df;
+  --info-soft: #e3edf8;
+  --bar: #1c5ea6;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+  --font-mono: "BIZ UDGothic", Consolas, "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ground: #0e1316;
+    --surface: #151c20;
+    --ink: #e2e8eb;
+    --ink-2: #9ca9b0;
+    --rule: #2c373d;
+    --frame: #4a5a68;
+    --accent: #f08b4e;
+    --accent-soft: #37231a;
+    --link: #87b7f0;
+    --code-bg: #1d262b;
+    --secondary: #5b6470;
+    --tab: #3a5878;
+    --tab-active: #2f6db0;
+    --error: #f17c71;
+    --error-soft: #3b1c1a;
+    --info-soft: #172636;
+    --bar: #87b7f0;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* display を指定した要素でも、hidden 属性で確実に隠す */
+[hidden] { display: none !important; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* 画面いっぱいに並べる。
+   左: 操作とトークン、中央上: 検索、右上: 認可サーバとトークンの情報、
+   下段: 項目ごと・患者ごとの集計（それぞれの枠の中でスクロールする）。
+   上段の高さは③の中身で決め、残りをすべて下段に回す */
+.layout {
+  flex: 1 1 auto;
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr) minmax(0, 1.25fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "side search  viewer"
+    "side results results";
+  gap: 16px;
+}
+.side { grid-area: side; }
+.search { grid-area: search; }
+.viewer { grid-area: viewer; }
+.results {
+  grid-area: results;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(310px, 0.55fr);
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--frame);
+  border-radius: 4px;
+  padding: 16px 18px;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* 左の列。画面の高さが足りないときは、この枠の中でスクロールする */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: auto;
+}
+
+h2 { font-size: 17px; margin: 0 0 12px; }
+h3 { font-size: 14px; margin: 0; font-family: var(--font-mono); overflow-wrap: anywhere; }
+h4 { font-size: 13px; margin: 0 0 8px; color: var(--ink-2); }
+
+/* ① スコープの組み合わせ（2 列のボタン） */
+fieldset.presets {
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.preset {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+/* ラジオボタンは見えなくして、枠全体を押せるようにする */
+.preset input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.preset:hover { border-color: var(--accent); }
+.preset:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); font-weight: 700; }
+.preset:has(input:focus-visible) { outline: 2px solid var(--link); outline-offset: 2px; }
+
+input[type="text"], textarea, select {
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  padding: 6px 9px;
+  width: 100%;
+}
+input:disabled { background: var(--code-bg); color: var(--ink-2); }
+textarea { display: block; resize: vertical; margin-bottom: 10px; font-family: var(--font-mono); font-size: 13px; }
+#free-query { font-family: var(--font-mono); font-size: 12.5px; }
+
+button {
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { cursor: not-allowed; opacity: 0.55; }
+button.yellow { background: var(--yellow); border-color: var(--yellow); color: var(--yellow-ink); }
+button.secondary { background: var(--secondary); border-color: var(--secondary); color: #fff; }
+button.small { padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, pre:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+.login-row { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 8px; }
+.login-row button { white-space: nowrap; padding-inline: 8px; }
+
+/* ② 受け取ったトークン */
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.section-head h2 { margin: 0; white-space: nowrap; }
+.section-head button { white-space: nowrap; font-size: 13px; padding: 5px 10px; }
+.facts { margin: 0; display: grid; gap: 8px; }
+.facts > div { display: grid; grid-template-columns: 8.5em minmax(0, 1fr); gap: 8px; }
+.facts dt { color: var(--ink-2); font-size: 13px; }
+.facts dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; overflow-wrap: anywhere; }
+.chip { background: var(--code-bg); border-radius: 999px; padding: 0 8px; font-size: 12px; }
+.chip.diff { background: var(--accent-soft); outline: 1px solid var(--accent); }
+code { font-family: var(--font-mono); font-size: 0.92em; }
+.muted { color: var(--ink-2); }
+
+/* 中央上: 検索。条件とボタンを 1 行に並べ、結果の概要は高さを固定して枠の中でスクロールする */
+.search {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  container-type: inline-size;
+}
+.search h2 { margin-bottom: 10px; }
+.query-grid {
+  display: grid;
+  grid-template-columns: auto minmax(8em, 1fr) auto;
+  gap: 8px 10px;
+  align-items: center;
+}
+.query-grid label { font-size: 13px; white-space: nowrap; }
+.query-grid .buttons { display: flex; justify-content: flex-end; gap: 6px; }
+.query-grid .buttons button { white-space: nowrap; }
+.query-grid select, .query-grid input[type="text"] { padding: 5px 7px; }
+/* ③の枠が狭いときは、Observation と Patient のボタンだけを次の段に置く */
+@container (max-width: 560px) {
+  .query-grid label { white-space: normal; max-width: 7em; line-height: 1.4; }
+  .query-grid #category { grid-column: 2 / -1; }
+  .query-grid .search-buttons { grid-column: 1 / -1; }
+}
+
+#result-summary {
+  flex: none;
+  height: 126px;
+  overflow: auto;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+}
+#result-summary > p { margin: 0 0 6px; }
+.summary-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; margin-bottom: 6px; }
+.summary { margin: 0; }
+.result-error { background: var(--error-soft); border-radius: 4px; padding: 6px 10px; margin-top: 4px; }
+.result-error p { margin: 0; }
+
+/* 右上: タブで切り替える情報。上段の高さは③で決まるので、この枠は中身の長さで高さを広げない */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 12px;
+  contain: size;
+}
+.tabs { display: flex; gap: 2px; }
+.tabs [role="tab"] {
+  flex: 1 1 0;
+  background: var(--tab);
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  color: #fff;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+.tabs [role="tab"][aria-selected="true"] { background: var(--tab-active); }
+.json {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  padding: 8px 12px;
+  border: 1px solid var(--frame);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+.notice { border-radius: 4px; padding: 10px 12px; }
+.notice.error { background: var(--error-soft); color: var(--error); font-weight: 700; }
+.notice.info { background: var(--info-soft); }
+
+/* 棒グラフ。2 列に並べて高さを抑える。
+   左右の棒の列は同じ幅にして、どの行の棒も同じ基準で比べられるようにする */
+.bars {
+  display: grid;
+  grid-template-columns: auto minmax(24px, 1fr) auto auto minmax(24px, 1fr) auto;
+  gap: 3px 8px;
+  align-items: center;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.bar-row { display: contents; }
+.bar-label { white-space: nowrap; }
+.bar-row:nth-child(even) .bar-label { padding-left: 14px; }
+.bar-track { background: var(--code-bg); border-radius: 4px; height: 9px; overflow: hidden; }
+.bar { display: block; height: 100%; background: var(--bar); }
+.bar-value { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 下段: 項目ごと・患者ごと。見出しは固定し、表だけを枠の中でスクロールする */
+.results .panel { display: flex; flex-direction: column; overflow: hidden; padding: 12px 14px; }
+#result-items, #result-patients { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.table-wrap { flex: 1; min-height: 0; overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th, td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: 12px; color: var(--ink-2); }
+thead th { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td code { white-space: nowrap; }
+
+.footnote { flex: none; color: var(--ink-2); font-size: 12px; margin-top: 8px; }
+.footnote p { margin: 0; }
+
+/* 幅が狭い画面では、ページ全体をスクロールする配置に切り替える */
+@media (max-width: 1200px) {
+  html, body { height: auto; }
+  body { display: block; }
+  .layout {
+    min-height: 0;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "side search"
+      "side viewer"
+      "side results";
+  }
+  .side { align-self: start; overflow: visible; }
+  .viewer { contain: none; height: 360px; }
+  .results .panel { max-height: 520px; }
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: "side" "search" "viewer" "results";
+  }
+  .results { grid-template-columns: 1fr; }
+}

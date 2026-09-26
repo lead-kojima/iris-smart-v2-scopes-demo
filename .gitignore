@@ -1,0 +1,16 @@
+# 起動時に作られる自己署名証明書
+webgateway/certs/
+
+# 起動時に IRIS が書き出す設定（デモ用の資格情報を含む）
+shared/*
+!shared/.gitkeep
+
+# Synthea 本体と作業用の出力（tools/synthea/generate.sh が取得・作成する）
+tools/synthea/*.jar
+tools/synthea/*.part
+tools/synthea/output/
+
+# ブラウザテストのスクリーンショット
+tools/browser-test/screenshots/
+
+__pycache__/

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SMART v2 スコープ 分析アプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="index">
+  <h1 class="visually-hidden">SMART v2 スコープ 分析アプリ</h1>
+
+  <div class="layout">
+    <aside class="panel side">
+      <div id="notice" class="notice" role="alert" hidden></div>
+
+      <section id="login-panel" aria-labelledby="login-heading">
+        <h2 id="login-heading">① スコープを選んでログイン</h2>
+        <fieldset class="presets" id="presets">
+          <legend class="visually-hidden">スコープの組み合わせ</legend>
+        </fieldset>
+        <label class="visually-hidden" for="scope">要求するスコープ（空白区切り、編集可）</label>
+        <textarea id="scope" rows="3" spellcheck="false" placeholder="要求するスコープ（空白区切り、編集可）"></textarea>
+        <div class="login-row">
+          <label class="visually-hidden" for="patient-id">患者 ID</label>
+          <input id="patient-id" type="text" autocomplete="off" placeholder="患者ID" title="患者コンテキストに使う患者 ID。「患者ごと」の表から入力できます">
+          <button id="login" type="button" class="yellow">ログインしてトークンを受け取る</button>
+        </div>
+      </section>
+
+      <section id="token-panel" aria-labelledby="token-heading">
+        <div class="section-head">
+          <h2 id="token-heading">② 受け取ったトークン</h2>
+          <button id="logout" type="button" class="secondary" disabled>トークンを破棄する</button>
+        </div>
+        <dl class="facts">
+          <div><dt>要求したスコープ</dt><dd id="requested-scope">—</dd></div>
+          <div><dt>発行されたスコープ</dt><dd id="granted-scope">—</dd></div>
+          <div><dt>ログインした利用者</dt><dd id="user">—</dd></div>
+          <div><dt>患者コンテキスト</dt><dd id="patient-context">—</dd></div>
+          <div><dt>有効期限</dt><dd id="expiry">—</dd></div>
+        </dl>
+      </section>
+    </aside>
+
+    <section class="panel search" id="search-panel" aria-labelledby="search-heading">
+      <h2 id="search-heading">③ データを検索して集計</h2>
+      <div class="query-grid">
+        <label for="category">Observation の検索条件</label>
+        <select id="category">
+          <option value="">条件なし</option>
+          <option value="laboratory">laboratory（検査）</option>
+          <option value="vital-signs">vital-signs（バイタル）</option>
+          <option value="survey">survey（問診票）</option>
+          <option value="social-history">social-history（生活歴）</option>
+        </select>
+        <div class="buttons search-buttons">
+          <button id="search-observation" type="button" class="yellow" disabled>Observation 検索</button>
+          <button id="search-patient" type="button" disabled>Patient 検索</button>
+        </div>
+        <label for="free-query">任意の検索</label>
+        <input id="free-query" type="text" spellcheck="false" value="Condition?_count=100">
+        <div class="buttons">
+          <button id="search-free" type="button" disabled>実行</button>
+        </div>
+      </div>
+      <div id="result-summary" aria-live="polite"><p class="muted">ログインすると検索できます。</p></div>
+    </section>
+
+    <section class="panel viewer" aria-label="認可サーバとトークンの情報">
+      <div class="tabs" role="tablist" aria-label="表示する情報">
+        <button type="button" role="tab" id="tab-discovery" aria-controls="discovery" aria-selected="true">認可サーバ情報</button>
+        <button type="button" role="tab" id="tab-access-token" aria-controls="access-token" aria-selected="false" tabindex="-1">アクセストークン情報</button>
+        <button type="button" role="tab" id="tab-id-token" aria-controls="id-token" aria-selected="false" tabindex="-1">ID トークン情報</button>
+      </div>
+      <pre id="discovery" class="json" role="tabpanel" aria-labelledby="tab-discovery" tabindex="0">読み込んでいます…</pre>
+      <pre id="access-token" class="json" role="tabpanel" aria-labelledby="tab-access-token" tabindex="0" hidden>ログインすると、アクセストークン（JWT）のヘッダーとペイロードが表示されます。</pre>
+      <pre id="id-token" class="json" role="tabpanel" aria-labelledby="tab-id-token" tabindex="0" hidden>ログインすると、ID トークンのペイロードが表示されます。</pre>
+    </section>
+
+    <div class="results">
+      <section class="panel" id="items-panel" aria-label="項目ごとの集計">
+        <div id="result-items"><p class="muted">Observation を検索すると、項目ごとの件数を表示します。</p></div>
+      </section>
+      <section class="panel" id="patients-panel" aria-label="患者ごとの集計">
+        <div id="result-patients"><p class="muted">Observation を検索すると、患者ごとの件数を表示します。</p></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="footnote">
+    <p>デモ用のアプリです。トークンはこのタブの sessionStorage に保存され、タブを閉じると消えます。</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

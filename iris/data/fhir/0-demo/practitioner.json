@@ -1,0 +1,26 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:practitioner-pr-001",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "pr-001",
+        "name": [
+          {
+            "family": "鈴木",
+            "given": [
+              "一郎"
+            ],
+            "text": "鈴木 一郎"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/pr-001"
+      }
+    }
+  ]
+}

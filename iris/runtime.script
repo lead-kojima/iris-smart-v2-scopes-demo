@@ -1,0 +1,3 @@
+set sc = ##class(Demo.Setup).Runtime()
+if 'sc { do $system.Status.DisplayError(sc) }
+halt
