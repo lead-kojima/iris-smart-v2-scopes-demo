@@ -7,7 +7,7 @@ IRIS for Health 2026.1 Community Edition だけで、SMART on FHIR v2 の細粒�
 - ブラウザの分析アプリ（認可コードフロー + PKCE、ライブラリなし）で、スコープを変えたときのトークンの中身と集計結果を並べて見る
 - fhirUser クレーム、患者コンテキスト（patient/ スコープ）、smart-configuration も動かす
 
-解説記事: InterSystems 開発者コミュニティ（投稿後にリンクを入れます）
+解説記事: [IRIS for Health 2026.1 の内蔵認可サーバで SMART on FHIR v2 スコープを試す](https://jp.community.intersystems.com/post/iris-health-2026-1-%E3%81%AE%E5%86%85%E8%94%B5%E8%AA%8D%E5%8F%AF%E3%82%B5%E3%83%BC%E3%83%90%E3%81%A7-smart-fhir-v2-%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%97%E3%82%92%E8%A9%A6%E3%81%99)（InterSystems 開発者コミュニティ）
 
 ## 構成
 
